@@ -24,8 +24,7 @@ password: Niket
 """
 # Create your views here.
 
-def get_user(self,request):
-    return self.request.user
+#This functions allows user to sign in
 @csrf_exempt
 def signin(request):
     if request.method=='POST':
@@ -38,10 +37,13 @@ def signin(request):
         else:
             return HttpResponse("Invalid Details")
 
+#This function allows user to sihgn out
 def signout(request):
     logout(request)
     return HttpResponse("You are logged out")
 
+
+#Any User can add his/her details online and register and get verified
 class Register(APIView):
     def post(self,request,format=None):
         serializer1=usermodel(data=request.data)
@@ -67,7 +69,9 @@ class Register(APIView):
         return Response({'user_data':user2})
 
         # http://127.0.0.1:8000/
-    
+
+
+#This function is used during email verification and verifies the user as soon as link is clicked
 def verification(request,token):
     user_email=Token.objects.get(key=token)
     user_details=USER()
@@ -80,6 +84,7 @@ def verification(request,token):
         user_details.save()
         return HttpResponse("You are Verified")
 
+#Manager is only entered by superuser and contains its own manager id
 class manager_data(APIView):
     
     def post(self,request,format=None):
@@ -99,6 +104,7 @@ class manager_data(APIView):
         else:
             return HttpResponse("Invalid User")
 
+#This class is used to update the manager data and only superuser has its right
 class Manager_update(APIView):
 
     authentication_classes=(TokenAuthentication,)
@@ -121,6 +127,8 @@ class Manager_update(APIView):
         manager_data_possible.delete()
         return HttpResponse("Manager Deleted")
 
+#this function is used to add staff and only manager has its right
+# It collecets the data from form 
 @csrf_exempt
 def add_staff(request):
     if(request.method=='POST'):
@@ -143,6 +151,7 @@ def add_staff(request):
         else:
             return HttpResponse("Invalid User")
         
+#This class is used to modify Staff data and only manager has its rights
 class Modify_Staff(APIView):
 
     authentication_classes=(TokenAuthentication,)
@@ -175,6 +184,8 @@ class Modify_Staff(APIView):
         else:
             return HttpResponse("Manager Required")
 
+
+#This is used to add activities and only staff can do it
 @csrf_exempt
 def add_activity(request):
     if request.method=='POST':
@@ -198,6 +209,8 @@ def add_activity(request):
         else:
             return HttpResponse("Invalid User")
 
+
+#The below class is used to modify the activity data
 class Modify_Activity(APIView):
 
     authentication_classes=(TokenAuthentication,)
@@ -228,6 +241,8 @@ class Modify_Activity(APIView):
         else:
             return HttpResponse("Staff Required")
 
+
+# This add the price for members and only staff hads its access
 @csrf_exempt
 def add_Member_price(request,id):
     if request.method=='POST':
@@ -249,6 +264,7 @@ def add_Member_price(request,id):
         else:
             return HttpResponse("Staff required")
 
+# this class modifies the member price data and staff has its access
 class Member_price_Modify(APIView):
 
     authentication_classes=(TokenAuthentication,)
@@ -279,6 +295,7 @@ class Member_price_Modify(APIView):
         else:
             return HttpResponse("Staff Required")
 
+#this add guest price and staff has its access
 @csrf_exempt
 def add_Guest_price(request,id):
     if request.method=='POST':
@@ -300,6 +317,7 @@ def add_Guest_price(request,id):
         else:
             return HttpResponse("Staff required")
 
+# Same goes here this modifies the guest price data and staff has its access
 class Guest_price_Modify(APIView):
 
     authentication_classes=(TokenAuthentication,)
@@ -331,6 +349,8 @@ class Guest_price_Modify(APIView):
         else:
             return HttpResponse("Staff Required")
 
+
+#This adds membership types and its prices and staff has its access
 @csrf_exempt
 def add_memberships(request):
     if request.method=='POST':
@@ -350,6 +370,7 @@ def add_memberships(request):
         else:
             return HttpResponse("Staff Required")
 
+#This class is used to modify the memberships and price data
 class Modify_memberships(APIView):
 
     authentication_classes=(TokenAuthentication,)
@@ -380,6 +401,4 @@ class Modify_memberships(APIView):
             return HttpResponse("Membership Data Deleted")
         else:
             return HttpResponse("Staff Required")
-
-
 
