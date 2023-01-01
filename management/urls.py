@@ -18,4 +18,5 @@ urlpatterns=[
     path("modifyguestprice/<id>",views.Guest_price_Modify.as_view(),name="modifyguestprice"),
     path("addmembership",views.add_memberships,name='membership'),
     path("modifymembership/<id>",views.Modify_memberships.as_view(),name='modifymembership'),
+    path("Listofusers",views.Users.as_view(),name='users_list')
 ]

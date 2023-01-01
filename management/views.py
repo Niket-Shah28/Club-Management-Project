@@ -8,7 +8,7 @@ from django.core.mail import send_mail
 from django.conf import settings
 from django.contrib.auth import login,authenticate,logout
 from .forms import SignIn
-from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.csrf import csrf_exempt,csrf_protect
 from .decoraters import *
 from django.utils.decorators import method_decorator
 from rest_framework import mixins
@@ -17,6 +17,9 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from rest_framework.decorators import api_view
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.authentication import TokenAuthentication
+from django.views.generic.list import ListView
+from django.http import JsonResponse
+from django.core import serializers
 
 """
 superuser: niketshah@gmail.com 
@@ -44,6 +47,7 @@ def signout(request):
 
 
 #Any User can add his/her details online and register and get verified
+
 class Register(APIView):
     def post(self,request,format=None):
         serializer1=usermodel(data=request.data)
@@ -80,6 +84,9 @@ def verification(request,token):
     except:
         return HttpResponse("ERROR")
     if user_details:
+        token=Token.objects.get(key=user_email)
+        token.delete()
+        Token.objects.create(user=USER.objects.get(email=user_details.email))
         user_details.is_verified=True
         user_details.save()
         return HttpResponse("You are Verified")
@@ -401,4 +408,23 @@ class Modify_memberships(APIView):
             return HttpResponse("Membership Data Deleted")
         else:
             return HttpResponse("Staff Required")
+
+class Users(ListView):
+
+    authentication_classes=(TokenAuthentication,)
+    permission_classes=[IsAuthenticated,]
+
+    model=USER
+
+    def get(self,request,format=None):
+        try:
+            manager_data=Manager.objects.get(Manager_email=request.user)
+        except Exception as e :
+            return HttpResponse(e)
+        if manager_data:
+            if manager_data.is_manager:
+                users=USER.objects.all()
+                users=users.order_by('id')
+                data=serializers.serialize('json',users)
+                return JsonResponse(data,safe=False)
 
