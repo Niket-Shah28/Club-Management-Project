@@ -91,10 +91,10 @@ def verification(request,token):
         user_details.save()
         return HttpResponse("You are Verified")
 
-#Manager is only entered by superuser and contains its own manager id
-class manager_data(APIView):
-    
-    def post(self,request,format=None):
+#Manager is only entered by superuser and contains its own manager id  
+@csrf_exempt
+def add_manager(request):
+    if request.method=='POST':
         manager_email=request.POST['email']
         manager_data_possible=Manager()
         manager_data_possible.Manager_email=USER.objects.get(email=manager_email)
@@ -409,6 +409,7 @@ class Modify_memberships(APIView):
         else:
             return HttpResponse("Staff Required")
 
+#This gives us the list of all users and only manager has its access
 class Users(ListView):
 
     authentication_classes=(TokenAuthentication,)
@@ -427,4 +428,65 @@ class Users(ListView):
                 users=users.order_by('id')
                 data=serializers.serialize('json',users)
                 return JsonResponse(data,safe=False)
+
+
+#This functions send smail to person who requests for Password Reset
+def Password_reset(request):
+    if request.method=='GET':
+        try:
+            user_details=USER.objects.get(email=request.user)
+        except Exception as e:
+            return HttpResponse(e)
+        user_token=Token.objects.get(user=USER.objects.get(email=request.user))
+        send_mail(
+            subject='Password Reset',
+            message='Hi '+user_details.First_Name+
+            ' ,This is link for Your Password Reset.'+
+            ' http://127.0.0.1:8000/password-reset/'+str(user_token.key),
+            from_email= settings.EMAIL_HOST_USER,
+            recipient_list=[user_details.email,]
+        )
+        return HttpResponse("Check Your Mail")
+
+#After Clicking on link a form will be popped and from that the data will be verified and password will be changed
+class Mail_Password_Reset(APIView):
+
+    authentication_classes=(TokenAuthentication,)
+    permission_classes=[IsAuthenticated,]
+
+    def post(self,request,token,format=None):
+        password=request.POST['password']
+        confirm_password=request.POST['confirm_password']
+        if password==confirm_password:
+            user_token=Token.objects.get(key=token)
+            user_details=USER.objects.get(email=user_token.user)
+            user_details.set_password(confirm_password)
+            user_token=Token.objects.get(key=token)
+            if user_details:
+                user_details.save()
+            else:
+                return HttpResponse("Invalid Data")
+            user_token.delete()
+            Token.objects.create(user=USER.objects.get(email=user_details.email))
+            return HttpResponse("Token Updated and password reset")
+        else:
+            return HttpResponse("Both the fields does not match")
+
+def add_member(request):
+    if request.method=='POST':
+        email=request.POST['email']
+        member_details=Member()
+        member_details.Member_email=USER.objects.get(email=email)
+        try:
+            member_details.Staff_id=NormalStaff.objects.get(Staff_email=request.user)
+        except Exception as e:
+            return HttpResponse(e)
+        if member_details:
+            member_details.save()
+        else:
+            return HttpResponse("Invalid Data")
+
+
+
+
 

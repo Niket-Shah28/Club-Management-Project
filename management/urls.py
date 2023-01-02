@@ -6,7 +6,7 @@ urlpatterns=[
     path("verify/<token>",views.verification,name='verification'),
     path("signin",views.signin,name='signin'),
     path("signout",views.signout,name='signout'),
-    path("manager",views.manager_data.as_view(),name='manager'),
+    path("manager",views.add_manager,name='manager'),
     path("managerupdate/<id>",views.Manager_update.as_view(),name='manager_update'),
     path("addstaff",views.add_staff,name='staff'),
     path("modifystaff/<id>",views.Modify_Staff.as_view(),name='staff_modify'),
@@ -18,5 +18,7 @@ urlpatterns=[
     path("modifyguestprice/<id>",views.Guest_price_Modify.as_view(),name="modifyguestprice"),
     path("addmembership",views.add_memberships,name='membership'),
     path("modifymembership/<id>",views.Modify_memberships.as_view(),name='modifymembership'),
-    path("Listofusers",views.Users.as_view(),name='users_list')
+    path("Listofusers",views.Users.as_view(),name='users_list'),
+    path("passwordreset/<token>",views.Password_reset,name='password_reset'),
+    path("password-reset/<token>",views.Mail_Password_Reset.as_view(),name='mail_password_reset')
 ]
