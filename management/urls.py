@@ -20,5 +20,9 @@ urlpatterns=[
     path("modifymembership/<id>",views.Modify_memberships.as_view(),name='modifymembership'),
     path("Listofusers",views.Users.as_view(),name='users_list'),
     path("passwordreset/<token>",views.Password_reset,name='password_reset'),
-    path("password-reset/<token>",views.Mail_Password_Reset.as_view(),name='mail_password_reset')
+    path("password-reset/<token>",views.Mail_Password_Reset.as_view(),name='mail_password_reset'),
+    path('addmember',views.add_member,name='add_member'),
+    path('addmembership/<id>',views.adding_membership,name='add_membership'),
+    path('payment/<id>',views.member_payment,name='payment'),
+    path('success',views.success,name='success_payment')
 ]

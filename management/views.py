@@ -20,6 +20,7 @@ from rest_framework.authentication import TokenAuthentication
 from django.views.generic.list import ListView
 from django.http import JsonResponse
 from django.core import serializers
+import razorpay
 
 """
 superuser: niketshah@gmail.com 
@@ -65,7 +66,7 @@ class Register(APIView):
         send_mail(
             subject='Hello Welcome to django email verification',
             message='Hi '+name.First_Name+
-            ' ,I am from Bombay Suburban Club,thank you for registering.'+
+            ' ,I am from Mumbai Suburban Club,thank you for registering.'+
             'This is your link to verify http://127.0.0.1:8000/verify/'+str(token),
             from_email= settings.EMAIL_HOST_USER,
             recipient_list=[user,]
@@ -472,6 +473,7 @@ class Mail_Password_Reset(APIView):
         else:
             return HttpResponse("Both the fields does not match")
 
+@csrf_exempt
 def add_member(request):
     if request.method=='POST':
         email=request.POST['email']
@@ -483,10 +485,55 @@ def add_member(request):
             return HttpResponse(e)
         if member_details:
             member_details.save()
+           # member_id=Member.objects.get(Member_email=USER.objects.get(email=email))
+            return HttpResponse("Here member's data is saved and then is redirected to adding")
         else:
             return HttpResponse("Invalid Data")
 
+@csrf_exempt
+def adding_membership(request,id):
+    if request.method=='POST':
+        membership_type=request.POST['type']
+        start_date=request.POST['start_date']
+        end_date=request.POST['end_date']
+        Payment_type=request.POST['payment_type']
+        Payment_date=request.POST['payment_date']
+        Membership_details=Current_Member_Membership()
+        Membership_details.member_id=Member.objects.get(Member_id=id) 
+        Membership_details.membership_type_id=memberships_and_price.objects.get(membership_type=membership_type)
+        Membership_details.start_date=start_date   
+        Membership_details.end_date=end_date       
+        Membership_details.Payment_type=Payment_type
+        Membership_details.Payment_date=Payment_date
+        amount=memberships_and_price.objects.get(membership_type=membership_type)
+        Membership_details.Amount=amount.membership_price
+        try:
+            Membership_details.Staff_id=NormalStaff.objects.get(Staff_email=request.user)
+        except Exception as e:
+            return HttpResponse("Staff Required")
+        if Membership_details:
+            Membership_details.save()
+            return HttpResponse("Member Membership data is saved here and is directed to Payment Gateway")
+        else:
+            return HttpResponse("Invalid Details")
 
+@csrf_exempt
+def member_payment(request,id):
+        client = razorpay.Client(auth=("rzp_test_Ca0278JPABNPT5", "w1k8Lum4gemGAQR3nU8u97j9"))
 
+        member_details=Member.objects.get(Member_id=id)
+        member_membership_details=Current_Member_Membership.objects.get(member_id=id)
+        membership_type=member_membership_details.membership_type_id
+        membership_details=memberships_and_price.objects.get(membership_data_id=membership_type)
+        amount=membership_details.membership_price
+        Total_amount=amount*100
+        order_currency='INR'
+        payment=client.order.create({'amount':Total_amount,'currency':'INR','payment_capture':1})
+
+        return render(request,'payment.html',{'payment':payment})
+
+@csrf_exempt
+def success(request):
+    return HttpResponse("Your Payment Was Successful")
 
 

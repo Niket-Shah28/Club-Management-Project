@@ -82,17 +82,23 @@ class NormalStaff(models.Model):
     def __int__(self):
         return self.Staff_id
 
+class memberships_and_price(models.Model):
+    membership_data_id=models.IntegerField(auto_created=True,primary_key=True)
+    membership_type=models.CharField(max_length=40,choices=membership_type)
+    membership_price=models.IntegerField()
+    Staff_id=models.ForeignKey(NormalStaff,on_delete=models.CASCADE)
+
+    def __int__(self):
+        return self.membership_data_id
+
 class Member(models.Model):
     Member_id=models.IntegerField(auto_created=True,primary_key=True)
     Member_email=models.ForeignKey(USER,on_delete=models.CASCADE)
     is_member=models.BooleanField(default=True)
     Staff_id=models.ForeignKey(NormalStaff,on_delete=models.CASCADE,blank=True)
 
-class memberships_and_price(models.Model):
-    membership_data_id=models.IntegerField(auto_created=True,primary_key=True)
-    membership_type=models.CharField(max_length=40,choices=membership_type)
-    membership_price=models.IntegerField()
-    Staff_id=models.ForeignKey(NormalStaff,on_delete=models.CASCADE)
+    def __int__(self):
+        return self.Member_id
 
 class activities(models.Model):
     activity_name=models.CharField(max_length=50)
@@ -120,7 +126,7 @@ class Price_for_Guests(models.Model):
 class Current_Member_Membership(models.Model):
     member_id=models.ForeignKey(Member,on_delete=models.CASCADE)
     membership_type_id=models.ForeignKey(memberships_and_price,on_delete=models.CASCADE)
-    membership_no=models.IntegerField(primary_key=True)
+    membership_no=models.IntegerField(auto_created=True,primary_key=True)
     start_date=models.DateField(auto_now_add=False)
     end_date=models.DateField(auto_now_add=False)
     Payment_type=models.CharField(max_length=100)
