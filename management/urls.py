@@ -24,5 +24,5 @@ urlpatterns=[
     path('addmember',views.add_member,name='add_member'),
     path('addmembership/<id>',views.adding_membership,name='add_membership'),
     path('payment/<id>',views.member_payment,name='payment'),
-    path('success',views.success,name='success_payment')
+    path('success',views.success,name='success_payment'),
 ]
