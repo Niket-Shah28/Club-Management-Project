@@ -519,7 +519,7 @@ def adding_membership(request,id):
 
 @csrf_exempt
 def member_payment(request,id):
-        client = razorpay.Client(auth=("rzp_test_zgyRnAPEvmafSf", "VT6s2rLVcjV8hGLSpFkXkQFQ"))
+        client = razorpay.Client(auth=(settings.RAZORPAY_ID,settings.RAZORPAY_KEY))
 
         member_details=Member.objects.get(Member_id=id)
         member_membership_details=Current_Member_Membership.objects.get(member_id=id)
