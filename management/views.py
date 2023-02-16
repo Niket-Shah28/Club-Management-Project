@@ -21,7 +21,7 @@ from django.views.generic.list import ListView
 from django.http import JsonResponse
 from django.core import serializers
 import razorpay
-
+from rest_framework.decorators import api_view
 """
 superuser: niketshah@gmail.com 
 password: Niket 
@@ -30,6 +30,7 @@ password: Niket
 
 #This functions allows user to sign in
 @csrf_exempt
+@api_view(['POST'])
 def signin(request):
     if request.method=='POST':
         email=request.POST['Email']
@@ -42,6 +43,7 @@ def signin(request):
             return HttpResponse("Invalid Details")
 
 #This function allows user to sihgn out
+@api_view(['POST'])
 def signout(request):
     logout(request)
     return HttpResponse("You are logged out")
@@ -94,6 +96,7 @@ def verification(request,token):
 
 #Manager is only entered by superuser and contains its own manager id  
 @csrf_exempt
+@api_view(['POST'])
 def add_manager(request):
     if request.method=='POST':
         manager_email=request.POST['email']
@@ -138,6 +141,7 @@ class Manager_update(APIView):
 #this function is used to add staff and only manager has its right
 # It collecets the data from form 
 @csrf_exempt
+@api_view(['POST'])
 def add_staff(request):
     if(request.method=='POST'):
         staff_email=request.POST['email']
@@ -195,6 +199,7 @@ class Modify_Staff(APIView):
 
 #This is used to add activities and only staff can do it
 @csrf_exempt
+@api_view(['POST'])
 def add_activity(request):
     if request.method=='POST':
         activity_name=request.POST['activity_name']
@@ -252,6 +257,7 @@ class Modify_Activity(APIView):
 
 # This add the price for members and only staff hads its access
 @csrf_exempt
+@api_view(['POST'])
 def add_Member_price(request,id):
     if request.method=='POST':
         activity_price=request.POST['price']
@@ -305,6 +311,7 @@ class Member_price_Modify(APIView):
 
 #this add guest price and staff has its access
 @csrf_exempt
+@api_view(['POST'])
 def add_Guest_price(request,id):
     if request.method=='POST':
         activity_price=request.POST['price']
@@ -360,6 +367,7 @@ class Guest_price_Modify(APIView):
 
 #This adds membership types and its prices and staff has its access
 @csrf_exempt
+@api_view(['POST'])
 def add_memberships(request):
     if request.method=='POST':
         membership_type=request.POST['membership_type']
@@ -474,6 +482,7 @@ class Mail_Password_Reset(APIView):
             return HttpResponse("Both the fields does not match")
 
 @csrf_exempt
+@api_view(['POST'])
 def add_member(request):
     if request.method=='POST':
         email=request.POST['email']
@@ -491,6 +500,7 @@ def add_member(request):
             return HttpResponse("Invalid Data")
 
 @csrf_exempt
+@api_view(['POST'])
 def adding_membership(request,id):
     if request.method=='POST':
         membership_type=request.POST['type']
