@@ -11,6 +11,8 @@ https://docs.djangoproject.com/en/4.1/ref/settings/
 """
 
 from pathlib import Path
+import os
+from django.core.exceptions import ImproperlyConfigured
 
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -25,15 +27,24 @@ import environ
 env = environ.Env()
 environ.Env.read_env()
 
+
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = env('SECRET_KEY')
+SECRET_KEY=os.getenv('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
 ALLOWED_HOSTS = []
 
+SITE_ID = 1
 
+AUTHENTICATION_BACKENDS = [
+    # Needed to login by username in Django admin, regardless of `allauth`
+    'django.contrib.auth.backends.ModelBackend',
+
+    # `allauth` specific authentication methods, such as login by e-mail
+    'allauth.account.auth_backends.AuthenticationBackend',
+]
 # Application definition
 
 INSTALLED_APPS = [
@@ -46,7 +57,50 @@ INSTALLED_APPS = [
     'management',
     'rest_framework.authtoken', 
     'rest_framework',
+    'django.contrib.sites',
+
+    'environ',
+
+    'drf_yasg',
+
+    'allauth',
+    'allauth.account',
+    'allauth.socialaccount',
+
+    'allauth.socialaccount.providers.github',
+
 ]
+
+
+
+# Provider specific settings
+SOCIALACCOUNT_PROVIDERS = {
+    'github': {
+        # For each OAuth based provider, either add a ``SocialApp``
+        # (``socialaccount`` app) containing the required client
+        # credentials, or list them here:
+        'APP': {
+            'client_id': 'a97f4a5c74ffed5dabf7',
+            'secret': 'd43666b4a36854e8cef3255c9e84e567b1ea6052',
+            'key': ''
+        }
+    }
+}
+#TEMPLATES = [
+ #   {
+ #       'BACKEND': 'django.template.backends.django.DjangoTemplates',
+ #       'DIRS': [],
+ #       'APP_DIRS': True,
+ #       'OPTIONS': {
+  #          'context_processors': [
+ #               # Already defined Django-related contexts here
+#
+ #               # `allauth` needs this from django
+  #              'django.template.context_processors.request',
+   #         ],
+    #    },
+   # },
+#]
 
 REST_FRAMEWORK={
     
@@ -61,6 +115,11 @@ REST_FRAMEWORK={
 
 
 AUTH_USER_MODEL='management.USER'
+
+ACCOUNT_USER_MODEL_USERNAME_FIELD = None
+ACCOUNT_EMAIL_REQUIRED = True
+ACCOUNT_USERNAME_REQUIRED = False
+ACCOUNT_AUTHENTICATION_METHOD = 'email'
 
 MIDDLEWARE = [
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -86,10 +145,13 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'django.template.context_processors.request',
             ],
         },
     },
 ]
+
+
 
 WSGI_APPLICATION = 'club.wsgi.application'
 
@@ -152,9 +214,8 @@ EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_USE_TLS = True
 EMAIL_PORT = 587
-EMAIL_HOST_USER = env('Host_user')
-EMAIL_HOST_PASSWORD = env('Host_password')
+EMAIL_HOST_USER=os.getenv('Host_user')
+EMAIL_HOST_PASSWORD =os.getenv('Host_password')
 
-RAZORPAY_ID=env('Razorpay_id')
-RAZORPAY_KEY=env('Razorpay_key')
-
+RAZORPAY_ID=os.getenv('Razorpay_id')
+RAZORPAY_KEY=os.getenv('Razorpay_key')
