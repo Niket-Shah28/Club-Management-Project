@@ -80,8 +80,8 @@ SOCIALACCOUNT_PROVIDERS = {
         # (``socialaccount`` app) containing the required client
         # credentials, or list them here:
         'APP': {
-            'client_id': 'a97f4a5c74ffed5dabf7',
-            'secret': 'd43666b4a36854e8cef3255c9e84e567b1ea6052',
+            'client_id': os.getenv('Github_client_id'),
+            'secret': os.getenv('Github_key'),
             'key': ''
         }
     }
