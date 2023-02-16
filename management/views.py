@@ -368,7 +368,7 @@ class Guest_price_Modify(APIView):
 #This adds membership types and its prices and staff has its access
 @csrf_exempt
 @api_view(['POST'])
-def add_memberships(request):
+def add_memberships_data(request):
     if request.method=='POST':
         membership_type=request.POST['membership_type']
         membership_price=request.POST['price']
